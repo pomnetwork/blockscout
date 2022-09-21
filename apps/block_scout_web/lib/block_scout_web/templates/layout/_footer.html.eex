@@ -1,0 +1,100 @@
+<footer class="footer">
+  <div class="footer-body container">
+    
+    
+
+    
+    
+
+    <div class="row">
+      <div class="col-xs-12 col-lg-6">
+       
+         <%= if logo_footer() do %>
+            <img  src="/images/footer-logo.png" alt="<%= subnetwork_title() %>" height="28"/>
+          <% end %>
+          <div class="footer-social-icons">
+     
+       
+          
+        </div>
+      </div>
+
+     
+      <div class="col-xs-12 col-lg-6">
+        <button type="button" class="btn-dark float-right" onclick="addNetwork('web3');">
+          <img class="mr-1" width="15" src="/images/metamask.svg" alt="Metamask"> Add POM Network
+      </button>
+      </div>
+      <div class="col-xs-12 col-lg-12">
+         
+      </div>
+  </div>
+</footer>
+<script src="/js/web3-utils.min.js"></script>
+<script src="/js/web3-eth.min.js"></script>
+<script src="/js/web3-providers-http.min.js"></script>
+<script type="text/javascript">
+        var eth;
+        var isTestnet = 'true';
+
+        async function addNetwork(type) {
+            
+            if (type === 'web3') {
+                if (typeof ethereum !== 'undefined') {
+                    eth = new Web3Eth(ethereum);
+                } else if (typeof web3 !== 'undefined') {
+                    eth = new Web3Eth(web3.givenProvider);
+                } else {
+                    eth = new Web3Eth(ethereum);
+                }                
+            }            
+
+            if (typeof eth !== 'undefined') {
+                var network = 0;
+                network = await eth.net.getId();
+                netID = network.toString();
+                var params;
+                if (isTestnet == "false") {
+                    if (netID == "4836") {
+                        alert("POM Network has already been added to Metamask.");
+                        return;
+                    } else {
+                        params = [{
+                            chainId: '0x12E4',
+                            chainName: 'POM Chain Mainnet',
+                            nativeCurrency: {
+                                name: 'POM',
+                                symbol: 'POM',
+                                decimals: 18
+                            },
+                            rpcUrls: ['https://mainnet-rpc.memescan.io/'],
+                            blockExplorerUrls: ['https://memescan.io/']
+                        }]
+                    }
+                } else {
+                    if (netID == "54857") {
+                        alert("POM Test Network has already been added to Metamask."); 
+                        return;
+                    } else {
+                        params = [{
+                            chainId: '0xD649',
+                            chainName: 'POM Chain Testnet',
+                            nativeCurrency: {
+                                name: 'POM',
+                                symbol: 'POM',
+                                decimals: 18
+                            },
+                            rpcUrls: ['https://testnet-rpc.memescan.io/'],
+                            blockExplorerUrls: ['https://testnet-explorer.memescan.io/']
+                        }]
+                    }
+                }
+
+                window.ethereum.request({ method: 'wallet_addEthereumChain', params })
+                    .then(() => console.log('Success'))
+                    .catch((error) => console.log("Error", error.message));
+            } else {
+                alert('Unable to locate a compatible web3 browser!');
+            }
+        }
+    </script>
